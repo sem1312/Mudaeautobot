@@ -24,16 +24,26 @@ class MyClient(discord.Client):
         if message.author.id != MUDAE_ID:
             return
 
+        # check normal message content
         contenido = message.content.lower()
         
-        if "wished by" in contenido:
-            print(f'¡wishlist detectada! intentando click... (๑♡⌓♡๑)')
+        # also check embed descriptions for "belongs to" (⸝⸝ᵕᴗᵕ⸝⸝)
+        embed_contenido = ""
+        if message.embeds:
+            for embed in message.embeds:
+                if embed.description:
+                    embed_contenido += embed.description.lower()
+
+        # check if either the message or the embed has the trigger text
+        if "wished by" in contenido or "belongs to" in embed_contenido:
+            print(f'¡objetivo detectado! intentando click... (๑♡⌓♡๑)')
             
             if message.components:
                 for row in message.components:
                     for component in row.children:
                         if isinstance(component, discord.Button):
                             try:
+                                # careful with sleep, might be too slow for high-roll servers!
                                 await asyncio.sleep(1)
                                 
                                 await component.click()
